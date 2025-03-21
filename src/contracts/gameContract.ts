@@ -7,14 +7,20 @@ import {
 } from "ton-core";
 
 export class GameContract implements Contract {
-  constructor(readonly address: Address) { }
+  readonly provider?: ContractProvider;
+
+  constructor(readonly address: Address, provider?: ContractProvider) {
+    this.provider = provider;
+  }
 
   static createFromAddress(address: Address) {
     return new GameContract(address);
   }
 
-  async registerPlayer(provider: ContractProvider, via: Sender, name: string) {
-    await provider.internal(via, {
+  async registerPlayer(via: Sender, name: string, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
       value: "0.01", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
@@ -24,8 +30,10 @@ export class GameContract implements Contract {
     });
   }
 
-  async requestBuff(provider: ContractProvider, via: Sender, requestBuff: boolean) {
-    await provider.internal(via, {
+  async requestBuff(via: Sender, requestBuff: boolean, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
       value: "0.01", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
@@ -35,8 +43,10 @@ export class GameContract implements Contract {
     });
   }
 
-  async resetGame(provider: ContractProvider, via: Sender, battleId: number) {
-    await provider.internal(via, {
+  async resetGame(via: Sender, battleId: bigint, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
       value: "0.01", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
@@ -46,8 +56,10 @@ export class GameContract implements Contract {
     });
   }
 
-  async initiateBattle(provider: ContractProvider, via: Sender, opponent: Address) {
-    await provider.internal(via, {
+  async initiateBattle(via: Sender, opponent: Address, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
       value: "0.01", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
@@ -57,8 +69,10 @@ export class GameContract implements Contract {
     });
   }
 
-  async enterBattleAction(provider: ContractProvider, via: Sender, action: string) {
-    await provider.internal(via, {
+  async enterBattleAction(via: Sender, action: string, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
       value: "0.01", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
@@ -76,9 +90,58 @@ export class GameContract implements Contract {
     return result.stack.readAddress();
   }
 
-  async getLeaderboard(provider: ContractProvider): Promise<any> {
+  async getLeaderboard(provider: ContractProvider): Promise<{
+    playerAddresses: Address[];
+    playerNames: string[];
+    battlesWon: bigint[];
+    battlesLost: bigint[];
+    mocksWon: bigint[];
+  }> {
     const result = await provider.get('Leaderboard', []);
-    return result.stack.readCell();
+    const cell = result.stack.readCell();
+    const slice = cell.beginParse();
+
+    const playerAddresses: Address[] = [];
+    const playerNames: string[] = [];
+    const battlesWon: bigint[] = [];
+    const battlesLost: bigint[] = [];
+    const mocksWon: bigint[] = [];
+
+    // 读取地址数组长度
+    const length = Number(slice.loadUint(32));
+
+    // 读取地址数组
+    for (let i = 0; i < length; i++) {
+      playerAddresses.push(slice.loadAddress());
+    }
+
+    // 读取名称数组
+    for (let i = 0; i < length; i++) {
+      playerNames.push(slice.loadStringRefTail());
+    }
+
+    // 读取胜利场次数组
+    for (let i = 0; i < length; i++) {
+      battlesWon.push(BigInt(slice.loadUint(32)));
+    }
+
+    // 读取失败场次数组
+    for (let i = 0; i < length; i++) {
+      battlesLost.push(BigInt(slice.loadUint(32)));
+    }
+
+    // 读取嘲讽胜利场次数组
+    for (let i = 0; i < length; i++) {
+      mocksWon.push(BigInt(slice.loadUint(32)));
+    }
+
+    return {
+      playerAddresses,
+      playerNames,
+      battlesWon,
+      battlesLost,
+      mocksWon
+    };
   }
 
   async getGameStartTimestamp(provider: ContractProvider): Promise<number> {
@@ -101,10 +164,10 @@ export class GameContract implements Contract {
     return Number(result.stack.readNumber());
   }
 
-  async getBattle(provider: ContractProvider, idx: number): Promise<any> {
+  async getBattle(provider: ContractProvider, idx: bigint): Promise<any> {
     const result = await provider.get('battle', [{
       type: 'int',
-      value: BigInt(idx)
+      value: idx
     }]);
     return result.stack.readCell();
   }
