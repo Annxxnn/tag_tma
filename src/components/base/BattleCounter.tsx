@@ -1,6 +1,6 @@
-import { useGameContract } from "../hooks/useGameContract";
+import { useGameContract } from "../../hooks/useGameContract";
 import { useState, useEffect } from "react";
-import { Card, FlexBoxCol } from "./styled/styled";
+import { Card, FlexBoxCol } from "../styled/styled";
 
 export function BattleCounter() {
   const { getBattleIdCounter } = useGameContract();

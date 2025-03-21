@@ -1,10 +1,10 @@
-import { useGameContract } from "../hooks/useGameContract";
+import { useGameContract } from "../../hooks/useGameContract";
 import { useState, useEffect } from "react";
 
 import {
   Card,
   FlexBoxCol
-} from "./styled/styled";
+} from "../styled/styled";
 
 export function PlayerAddress({ idx }: { idx: number }) {
   const { contract } = useGameContract();

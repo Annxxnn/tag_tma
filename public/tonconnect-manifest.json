@@ -1,0 +1,7 @@
+{
+  "name": "TAG TMA",
+  "url": "https://yourdomain.com/tma",
+  "iconUrl": "https://yourdomain.com/logo.png",
+  "platforms": ["web", "ios", "android"],
+  "manifestUrl": "https://yourdomain.com/tma/tonconnect-manifest.json"
+}

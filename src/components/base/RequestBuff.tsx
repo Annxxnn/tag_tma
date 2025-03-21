@@ -1,13 +1,13 @@
 import { TonConnectButton } from "@tonconnect/ui-react";
-import { useGameContract } from "../hooks/useGameContract";
-import { useTonConnect } from "../hooks/useTonConnect";
+import { useGameContract } from "../../hooks/useGameContract";
+import { useTonConnect } from "../../hooks/useTonConnect";
 
 import {
   Card,
   FlexBoxCol,
   FlexBoxRow,
   Button,
-} from "./styled/styled";
+} from "../styled/styled";
 
 export function RequestBuff() {
   const { connected } = useTonConnect();

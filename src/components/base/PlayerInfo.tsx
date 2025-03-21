@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, FlexBoxCol } from "./styled/styled";
-import { useGameContract } from '../hooks/useGameContract';
+import { Card, FlexBoxCol } from "../styled/styled";
+import { useGameContract } from '../../hooks/useGameContract';
 import { Address } from "ton-core";
 export function PlayerInfo({ address }: { address: Address }) {
   const { getPlayer } = useGameContract();

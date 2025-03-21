@@ -1,10 +1,10 @@
-import { useGameContract } from "../hooks/useGameContract";
+import { useGameContract } from "../../hooks/useGameContract";
 import { useState, useEffect } from "react";
 
 import {
   Card,
   FlexBoxCol
-} from "./styled/styled";
+} from "../styled/styled";
 export function GameTimestamp() {
   const { contract } = useGameContract();
   const [startTime, setStartTime] = useState<number | null>(null);

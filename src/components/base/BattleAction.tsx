@@ -1,6 +1,6 @@
 import { TonConnectButton } from "@tonconnect/ui-react";
-import { useGameContract } from "../hooks/useGameContract";
-import { useTonConnect } from "../hooks/useTonConnect";
+import { useGameContract } from "../../hooks/useGameContract";
+import { useTonConnect } from "../../hooks/useTonConnect";
 import { useState } from "react";
 
 import {
@@ -9,7 +9,7 @@ import {
   FlexBoxRow,
   Button,
   Input,
-} from "./styled/styled";
+} from "../styled/styled";
 
 export function BattleAction() {
   const { connected } = useTonConnect();
