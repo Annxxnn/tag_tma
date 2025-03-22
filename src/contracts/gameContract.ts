@@ -16,12 +16,13 @@ export class GameContract implements Contract {
   static createFromAddress(address: Address) {
     return new GameContract(address);
   }
-
+  //获取合约code和data
   async registerPlayer(via: Sender, name: string, provider?: ContractProvider) {
     const p = provider || this.provider;
+    console.log("p", p);
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
-      value: "0.01", // 发送0.01 TON作为gas费
+      value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
         .storeUint(3424225224, 32) // RegisterPlayer message op
@@ -34,7 +35,7 @@ export class GameContract implements Contract {
     const p = provider || this.provider;
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
-      value: "0.01", // 发送0.01 TON作为gas费
+      value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
         .storeUint(3785359400, 32) // RequestBuff message op
@@ -47,7 +48,7 @@ export class GameContract implements Contract {
     const p = provider || this.provider;
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
-      value: "0.01", // 发送0.01 TON作为gas费
+      value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
         .storeUint(3287988210, 32) // ResetGame message op
@@ -60,7 +61,7 @@ export class GameContract implements Contract {
     const p = provider || this.provider;
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
-      value: "0.01", // 发送0.01 TON作为gas费
+      value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
         .storeUint(110749952, 32) // InitiateBattle message op
@@ -73,7 +74,7 @@ export class GameContract implements Contract {
     const p = provider || this.provider;
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
-      value: "0.01", // 发送0.01 TON作为gas费
+      value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
         .storeUint(1042285330, 32) // EnterBattleAction message op
@@ -187,20 +188,20 @@ export class GameContract implements Contract {
     const result = await provider.get('player', [{
       type: "slice", cell: beginCell().storeAddress(playerAddress).endCell()
     }]);
-    const cell = result.stack.readCell();
-    // 解析Cell中的数据
-    const slice = cell.beginParse();
+    console.log("result=========", result);
+    const stack = result.stack;
+
     return {
-      id: BigInt(slice.loadInt(32)),
-      health: BigInt(slice.loadInt(32)),
-      attack: BigInt(slice.loadInt(32)),
-      defense: BigInt(slice.loadInt(32)),
-      battlesWon: BigInt(slice.loadInt(32)),
-      battlesLost: BigInt(slice.loadInt(32)),
-      mocksWon: BigInt(slice.loadInt(32)),
-      lastBuffTime: BigInt(slice.loadUint(32)),
-      name: slice.loadStringTail(),
-      battleId: BigInt(slice.loadInt(32))
+      id: BigInt(stack.readNumber()),
+      health: BigInt(stack.readNumber()),
+      attack: BigInt(stack.readNumber()),
+      defense: BigInt(stack.readNumber()),
+      battlesWon: BigInt(stack.readNumber()),
+      battlesLost: BigInt(stack.readNumber()),
+      mocksWon: BigInt(stack.readNumber()),
+      lastBuffTime: BigInt(stack.readNumber()),
+      name: stack.readCell().beginParse().loadStringTail(),
+      battleId: BigInt(stack.readNumber())
     };
   }
 

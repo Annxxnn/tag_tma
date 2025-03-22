@@ -1,25 +1,25 @@
-import { openLink } from '@telegram-apps/sdk-react';
 import { TonConnectButton, useTonWallet } from '@tonconnect/ui-react';
 import {
-  Avatar,
-  Cell,
   List,
-  Navigation,
   Placeholder,
-  Section,
   Text,
-  Title,
 } from '@telegram-apps/telegram-ui';
-import { Link } from 'react-router-dom';
 import type { FC } from 'react';
-
-import { DisplayData } from '../../components/DisplayData/DisplayData.tsx';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Page } from '../../components/Page.tsx';
 
 import './TONConnectPage.css';
 
 export const TONConnectPage: FC = () => {
   const wallet = useTonWallet();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (wallet) {
+      navigate('/register-player');
+    }
+  }, [wallet, navigate]);
 
   if (!wallet) {
     return (
@@ -41,30 +41,24 @@ export const TONConnectPage: FC = () => {
     );
   }
 
-  const {
-    account: { chain, publicKey, address },
-    device: {
-      appName,
-      appVersion,
-      maxProtocolVersion,
-      platform,
-      features,
-    },
-  } = wallet;
+  // const {
+  //   account: { chain, publicKey, address },
+  //   device: {
+  //     appName,
+  //     appVersion,
+  //     maxProtocolVersion,
+  //     platform,
+  //     features,
+  //   },
+  // } = wallet;
 
   return (
     <Page>
       <List>
-            <TonConnectButton className="ton-connect-page__button-connected"/>
-            <div className="center-link">
-              <p>enjoy your game!</p>
-        <Link to="/register-player">
-          <Cell
-          >
-            register player
-          </Cell>
-        </Link>
-      </div>
+        <TonConnectButton className="ton-connect-page__button-connected" />
+        <div className="center-link">
+          <p>enjoy your game!</p>
+        </div>
       </List>
     </Page>
   );

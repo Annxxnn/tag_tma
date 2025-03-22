@@ -33,6 +33,11 @@ export const Button = styled.button`
   font-weight: 700;
   cursor: pointer;
   pointer-events: ${(props) => (props.disabled ? "none" : "inherit")};
+  transition: filter 0.1s;
+
+  &:active {
+    filter: ${(props) => (props.disabled ? "none" : "brightness(0.9)")};
+  }
 `;
 
 export const Ellipsis = styled.div`

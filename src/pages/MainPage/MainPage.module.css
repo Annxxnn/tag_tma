@@ -1,0 +1,38 @@
+.container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.title {
+  font-size: 3.75rem;
+  font-weight: 700;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.ton {
+  color: #e98f35;
+}
+
+.attack {
+  color: #e98f35;
+}
+
+.game {
+  color: #e98f35;
+}
+
+.description {
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+}

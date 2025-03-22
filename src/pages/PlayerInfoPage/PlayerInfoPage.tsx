@@ -1,0 +1,142 @@
+import { TonConnectButton } from "@tonconnect/ui-react";
+import { useGameContract } from "../../hooks/useGameContract";
+import { useTonConnect } from "../../hooks/useTonConnect";
+import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Address } from "ton-core";
+import {
+  Card,
+  FlexBoxCol,
+} from "../../components/styled/styled";
+import { useTonWallet } from "@tonconnect/ui-react";
+import styles from './PlayerInfoPage.module.css';
+// 在文件顶部添加接口定义
+interface PlayerData {
+  id: bigint;
+  health: bigint;
+  attack: bigint;
+  defense: bigint;
+  battlesWon: bigint;
+  battlesLost: bigint;
+  mocksWon: bigint;
+  lastBuffTime: bigint;
+  name: string;
+  battleId: bigint;
+}
+
+export function PlayerInfoPage() {
+  const navigate = useNavigate();
+  const { connected, wallet } = useTonConnect();
+  const { getPlayer } = useGameContract();
+  const [playerData, setPlayerData] = useState<PlayerData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const Wallet = useTonWallet();
+
+  useEffect(() => {
+    if (!connected) {
+      navigate('/ton-connect');
+    } else {
+      const fetchPlayerData = async () => {
+        try {
+          if (Wallet != null) {
+            const playerAddress = Address.parse(Wallet.account.address);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const data = await getPlayer(playerAddress);
+            // Convert contract data to expected format
+            if (data != null) {
+              const formattedData: PlayerData = {
+                id: BigInt(data.id?.toString() || '0'),
+                health: BigInt(data.health?.toString() || '0'),
+                attack: BigInt(data.attack?.toString() || '0'),
+                defense: BigInt(data.defense?.toString() || '0'),
+                battlesWon: BigInt(data.battlesWon?.toString() || '0'),
+                battlesLost: BigInt(data.battlesLost?.toString() || '0'),
+                mocksWon: BigInt(data.mocksWon?.toString() || '0'),
+                lastBuffTime: BigInt(data.lastBuffTime?.toString() || '0'),
+                name: data.name?.toString() || '未知玩家',
+                battleId: BigInt(data.battleId?.toString() || '0')
+              };
+              setPlayerData(formattedData);
+              setLoading(false);
+            }
+          }
+        } catch (err) {
+          console.error('获取玩家信息失败:', err);
+          setError('获取玩家信息失败，请确保您已注册');
+          setLoading(false);
+        }
+      };
+      fetchPlayerData();
+    }
+  }, [connected, navigate, wallet, getPlayer, Wallet]);
+
+  if (loading) {
+    return (
+      <FlexBoxCol>
+        <FlexBoxCol className={styles.container}>
+          <h2>玩家信息</h2>
+          <div className={styles.buttonContainer}>
+            <TonConnectButton />
+          </div>
+          <Card className={styles.infoCard}>
+            <p className={styles.loading}>加载中...</p>
+          </Card>
+        </FlexBoxCol>
+      </FlexBoxCol>
+
+    );
+  }
+
+  if (error) {
+    return (
+      <FlexBoxCol>
+        <FlexBoxCol className={styles.container}>
+          <h2>玩家信息</h2>
+          <div className={styles.buttonContainer}>
+            <TonConnectButton />
+          </div>
+          <Card className={styles.infoCard}>
+            <p className={styles.error}>{error}</p>
+          </Card>
+        </FlexBoxCol>
+      </FlexBoxCol>
+
+    );
+  }
+
+  return (
+    <FlexBoxCol>
+      <FlexBoxCol className={styles.container}>
+        <h2>玩家信息</h2>
+        <div className={styles.buttonContainer}>
+          <TonConnectButton />
+        </div>
+
+        {wallet && playerData && (
+          <Card className={styles.infoCard}>
+            <FlexBoxCol>
+              <h3>玩家信息</h3>
+              <p>ID: {playerData.id.toString()}</p>
+              <p>名称: {playerData.name}</p>
+              <p>生命值: {playerData.health.toString()}</p>
+              <p>攻击力: {playerData.attack.toString()}</p>
+              <p>防御力: {playerData.defense.toString()}</p>
+              <p>胜利场次: {playerData.battlesWon.toString()}</p>
+              <p>失败场次: {playerData.battlesLost.toString()}</p>
+              <p>上次增益时间: {Number(playerData.lastBuffTime) === 0 ? null : new Date(Number(playerData.lastBuffTime) * 1000).toLocaleString()}</p>
+              <p>战斗ID: {playerData.battleId.toString()}</p>
+            </FlexBoxCol>
+          </Card>
+        )}
+      </FlexBoxCol>
+
+      {/* 战斗按钮组件 */}
+      <BattleInitiation styles={styles} />
+    </FlexBoxCol>
+  );
+}
+
+import { BattleInitiation } from './BattleInitiation';
+
+// 删除原有战斗相关逻辑

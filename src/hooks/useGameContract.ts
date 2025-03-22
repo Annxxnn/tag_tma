@@ -3,17 +3,36 @@ import { useTonClient } from "./useTonClient";
 import { useAsyncInitialize } from "./useAsyncInitialize";
 import { useTonConnect } from "./useTonConnect";
 import { Address, OpenedContract } from "ton-core";
+import { useTonWallet } from "@tonconnect/ui-react";
+import { init } from "../init";
+
+
+
 
 export function useGameContract() {
   const { client } = useTonClient();
+  const wallet = useTonWallet();
   const { sender } = useTonConnect();
   const TonGameContract = useAsyncInitialize(async () => {
+    console.log("client", client);
     if (!client) throw new Error('TON客户端未初始化');
     const contract = new GameContract(
-      Address.parse("EQDlMRlbubgz_Tfge5gnY-vJeQOjDJg_EmiAE4Uii_-Ggio-")
+      Address.parse("kQDlMRlbubgz_Tfge5gnY-vJeQOjDJg_EmiAE4Uii_-GgpG0")
     );
-    return client.open(contract) as OpenedContract<GameContract>;
+    console.log("ton客户端连接成功");
+    return await client.open(contract) as OpenedContract<GameContract>;
   }, [client]);
+  async function initializeProvider() {
+    if (client && TonGameContract) {
+      const code = (await client.getContractState(TonGameContract.address)).code;
+      const data = (await client.getContractState(TonGameContract.address)).data;
+      const provider = client.provider(TonGameContract.address, { code, data });
+      console.log("provider", provider);
+      return provider;
+    }
+  }
+
+
 
   // 注册玩家
   const registerPlayer = async (name: string) => {
@@ -24,7 +43,11 @@ export function useGameContract() {
       throw new Error('请先连接钱包');
     }
     try {
-      await TonGameContract.registerPlayer(sender, name);
+      //获取provider?: ContractProvider
+      const provider = await initializeProvider();
+
+      await TonGameContract.registerPlayer(sender, name, provider);
+      console.log('注册玩家成功');
     } catch (error) {
       console.error('注册玩家失败:', error);
       throw error;
@@ -35,14 +58,16 @@ export function useGameContract() {
   const requestBuff = async (requestBuff: boolean) => {
     if (!TonGameContract) throw new Error('合约未初始化');
     if (!sender) throw new Error('请先连接钱包');
-    await TonGameContract.requestBuff(sender, requestBuff);
+    const provider = await initializeProvider();
+    await TonGameContract.requestBuff(sender, requestBuff, provider);
   };
 
   // 重置游戏
   const resetGame = async (battleId: bigint) => {
     if (!TonGameContract) throw new Error('合约未初始化');
     if (!sender) throw new Error('请先连接钱包');
-    await TonGameContract.resetGame(sender, battleId);
+    const provider = await initializeProvider();
+    await TonGameContract.resetGame(sender, battleId, provider);
   };
 
   // 发起战斗

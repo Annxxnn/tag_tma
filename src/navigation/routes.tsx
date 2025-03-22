@@ -1,7 +1,8 @@
 import type { ComponentType, JSX } from 'react';
 
-import { IndexPage } from '../pages/IndexPage/IndexPage';
-import { RegisterPlayerPage } from '../pages/RegisterPlayerPage/RegisterPlayerPage'; 
+import { MainPage } from '../pages/MainPage/MainPage';
+import { RegisterPlayerPage } from '../pages/RegisterPlayerPage/RegisterPlayerPage';
+import { PlayerInfoPage } from '../pages/PlayerInfoPage/PlayerInfoPage';
 import { LaunchParamsPage } from '../pages/LaunchParamsPage.tsx';
 import { ThemeParamsPage } from '../pages/ThemeParamsPage.tsx';
 
@@ -15,8 +16,9 @@ interface Route {
 }
 // 导航路径，点击这个路径会跳转到对应的页面
 export const routes: Route[] = [
-  { path: '/', Component: IndexPage },
-  { path: '/register-player',Component: RegisterPlayerPage },
+  { path: '/', Component: MainPage },
+  { path: '/register-player', Component: RegisterPlayerPage },
+  { path: '/player-Info', Component: PlayerInfoPage },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
   { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
   {

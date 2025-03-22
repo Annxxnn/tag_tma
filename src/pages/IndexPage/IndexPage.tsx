@@ -11,15 +11,15 @@ export const IndexPage: FC = () => {
     <Page back={false}>
       <div className="index-page__container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <List>
-        <Link to="/ton-connect">
-          <Cell
-            className="index-page__cell"
-            before={<Image src={tonSvg} style={{ backgroundColor: '#007AFF' }} />}
-            subtitle="Connect your TON wallet"
-          >
-            TON Connect
-          </Cell>
-        </Link>
+          <Link to="/ton-connect">
+            <Cell
+              className="index-page__cell"
+              before={<Image src={tonSvg} style={{ backgroundColor: '#007AFF' }} />}
+              subtitle="Connect your TON wallet"
+            >
+              TON Connect
+            </Cell>
+          </Link>
           {/* <Link to="/init-data">
             <Cell subtitle="User data, chat information, technical data">Init Data</Cell>
           </Link>
@@ -29,7 +29,7 @@ export const IndexPage: FC = () => {
           <Link to="/theme-params">
             <Cell subtitle="Telegram application palette information">Theme Parameters</Cell>
           </Link> */}
-      </List>
+        </List>
       </div>
     </Page>
   );
