@@ -10,6 +10,9 @@ import {
 } from "../../components/styled/styled";
 import { useTonWallet } from "@tonconnect/ui-react";
 import styles from './PlayerInfoPage.module.css';
+import { BattleInitiation } from './BattleInitiation';
+import { BuffRequest } from './BuffRequest';
+import { LeaderboardView } from './LeaderboardView';
 // 在文件顶部添加接口定义
 interface PlayerData {
   id: bigint;
@@ -34,17 +37,20 @@ export function PlayerInfoPage() {
   const Wallet = useTonWallet();
 
   useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
     if (!connected) {
       navigate('/ton-connect');
-    } else {
+      return;
+    } else if (!playerData) { // 仅当没有数据时获取
       const fetchPlayerData = async () => {
         try {
-          if (Wallet != null) {
+          if (Wallet != null && isMounted) {
             const playerAddress = Address.parse(Wallet.account.address);
-            await new Promise(resolve => setTimeout(resolve, 1000));
             const data = await getPlayer(playerAddress);
-            // Convert contract data to expected format
-            if (data != null) {
+
+            if (data != null && isMounted) {
               const formattedData: PlayerData = {
                 id: BigInt(data.id?.toString() || '0'),
                 health: BigInt(data.health?.toString() || '0'),
@@ -62,14 +68,32 @@ export function PlayerInfoPage() {
             }
           }
         } catch (err) {
-          console.error('获取玩家信息失败:', err);
-          setError('获取玩家信息失败，请确保您已注册');
-          setLoading(false);
+          if (isMounted) {
+            console.error('获取玩家信息失败:', err);
+            setError('获取玩家信息失败，请确保您已注册');
+            setLoading(false);
+          }
         }
       };
-      fetchPlayerData();
+
+      // 添加请求超时处理
+      const timeoutId = setTimeout(() => {
+        fetchPlayerData();
+      }, 1000);
+
+      // 清理函数
+      return () => {
+        isMounted = false;
+        controller.abort();
+        clearTimeout(timeoutId);
+      };
     }
-  }, [connected, navigate, wallet, getPlayer, Wallet]);
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [connected, navigate, getPlayer]); // 移除不必要依赖
 
   if (loading) {
     return (
@@ -95,6 +119,16 @@ export function PlayerInfoPage() {
           <h2>玩家信息</h2>
           <div className={styles.buttonContainer}>
             <TonConnectButton />
+            <button
+              className={styles.refreshButton}
+              onClick={async () => {
+                setPlayerData(null);
+                setError('');
+                setLoading(true);
+              }}
+            >
+              刷新
+            </button>
           </div>
           <Card className={styles.infoCard}>
             <p className={styles.error}>{error}</p>
@@ -108,9 +142,17 @@ export function PlayerInfoPage() {
   return (
     <FlexBoxCol>
       <FlexBoxCol className={styles.container}>
-        <h2>玩家信息</h2>
         <div className={styles.buttonContainer}>
           <TonConnectButton />
+          <button
+            className={styles.refreshButton}
+            onClick={async () => {
+              setPlayerData(null);
+              setLoading(true);
+            }}
+          >
+            刷新
+          </button>
         </div>
 
         {wallet && playerData && (
@@ -129,14 +171,15 @@ export function PlayerInfoPage() {
             </FlexBoxCol>
           </Card>
         )}
+        {/* 战斗按钮组件 */}
+        <BattleInitiation styles={styles} />
+        {/* 请求增益按钮组件 */}
+        <BuffRequest styles={styles} onBuffSuccess={() => {
+          setPlayerData(null);
+          setLoading(true);
+        }} />
+        <LeaderboardView styles={styles} />
       </FlexBoxCol>
-
-      {/* 战斗按钮组件 */}
-      <BattleInitiation styles={styles} />
     </FlexBoxCol>
   );
 }
-
-import { BattleInitiation } from './BattleInitiation';
-
-// 删除原有战斗相关逻辑

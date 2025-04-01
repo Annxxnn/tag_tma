@@ -17,7 +17,10 @@ export function useGameContract() {
     console.log("client", client);
     if (!client) throw new Error('TON客户端未初始化');
     const contract = new GameContract(
-      Address.parse("kQDlMRlbubgz_Tfge5gnY-vJeQOjDJg_EmiAE4Uii_-GgpG0")
+      //Address.parse("kQDlMRlbubgz_Tfge5gnY-vJeQOjDJg_EmiAE4Uii_-GgpG0")
+      // Address.parse("EQBw1DQ_No9VG_l3Bhpz_fV7F6Psxc0uIbxUyKmQrIWICGkW")
+      // Address.parse("EQBDL687xDH-wSbe1ck177bSraNmeQuryKYhwAb0jh3CLTKM")
+      Address.parse("EQAkl4O3GAD_345tBHCWy7nUjlp85wX7sIS0KUoffJDLzJ6P")
     );
     console.log("ton客户端连接成功");
     return await client.open(contract) as OpenedContract<GameContract>;
@@ -74,16 +77,24 @@ export function useGameContract() {
   const initiateBattle = async (opponent: Address) => {
     if (!TonGameContract) throw new Error('合约未初始化');
     if (!sender) throw new Error('请先连接钱包');
-    await TonGameContract.initiateBattle(sender, opponent);
+    const provider = await initializeProvider();
+    await TonGameContract.initiateBattle(sender, opponent, provider);
   };
 
   // 输入战斗行动
-  const enterBattleAction = async (action: string) => {
+  const enterBattleAction = async (player1Action: string, player2Action: string) => {
     if (!TonGameContract) throw new Error('合约未初始化');
     if (!sender) throw new Error('请先连接钱包');
-    await TonGameContract.enterBattleAction(sender, action);
+    const provider = await initializeProvider();
+    await TonGameContract.enterBattleAction(sender, player1Action, player2Action, provider);
   };
-
+  //设置battleId
+  const setBattleId = async (battleId: bigint) => {
+    if (!TonGameContract) throw new Error('合约未初始化');
+    if (!sender) throw new Error('请先连接钱包');
+    const provider = await initializeProvider();
+    await TonGameContract.setBattleId(sender, battleId, provider);
+  };
   // 获取玩家地址
   const getPlayerAddress = async (idx: number) => {
     if (!TonGameContract) throw new Error('合约未初始化');
@@ -95,7 +106,9 @@ export function useGameContract() {
   const getLeaderboard = async () => {
     if (!TonGameContract) throw new Error('合约未初始化');
     if (!sender) throw new Error('请先连接钱包');
-    return await TonGameContract.getLeaderboard();
+    const data = await TonGameContract.getLeaderboard();
+    console.log("data", data);
+    return data;
   };
 
 
@@ -133,9 +146,20 @@ export function useGameContract() {
   };
 
   // 获取玩家信息
-  const getPlayer = async (playerAddress: Address) => {
+  const getPlayer = async (playerAddress: Address, retries = 3) => {
     if (!TonGameContract) return null;
-    return await TonGameContract.getPlayer(playerAddress);
+
+    try {
+      return await TonGameContract.getPlayer(playerAddress);
+    } catch (error) {
+      if (retries > 0) {
+        console.log(`获取玩家数据失败，剩余重试次数: ${retries}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return await getPlayer(playerAddress, retries - 1);
+      }
+      console.error('获取玩家数据失败:', error);
+      throw error;
+    }
   };
 
   // 获取初始属性
@@ -152,6 +176,7 @@ export function useGameContract() {
     resetGame,
     initiateBattle,
     enterBattleAction,
+    setBattleId,
     getPlayerAddress,
     getLeaderboard,
     getGameStartTimestamp,

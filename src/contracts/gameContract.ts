@@ -70,19 +70,31 @@ export class GameContract implements Contract {
     });
   }
 
-  async enterBattleAction(via: Sender, action: string, provider?: ContractProvider) {
+  async enterBattleAction(via: Sender, player1Action: string, player2Action: string, provider?: ContractProvider) {
     const p = provider || this.provider;
     if (!p) throw new Error("Provider is required");
     await p.internal(via, {
       value: "0.1", // 发送0.01 TON作为gas费
       bounce: true,
       body: beginCell()
-        .storeUint(1042285330, 32) // EnterBattleAction message op
-        .storeStringRefTail(action) // 存储玩家行动
+        .storeUint(2411416401, 32) // EnterBattleAction message op
+        .storeStringRefTail(player1Action) // 存储玩家1行动
+        .storeStringRefTail(player2Action) // 存储玩家2行动
         .endCell()
     });
   }
-
+  async setBattleId(via: Sender, battleId: bigint, provider?: ContractProvider) {
+    const p = provider || this.provider;
+    if (!p) throw new Error("Provider is required");
+    await p.internal(via, {
+      value: "0.1", // 发送0.01 TON作为gas费
+      bounce: true,
+      body: beginCell()
+        .storeUint(3352910604, 32) //setBattleId message op
+        .storeInt(battleId, 257) // 存储battleId
+        .endCell()
+    })
+  }
   async getPlayerAddress(provider: ContractProvider, idx: number): Promise<Address> {
     const result = await provider.get('playerAddress', [{
       type: 'int',
@@ -99,6 +111,7 @@ export class GameContract implements Contract {
     mocksWon: bigint[];
   }> {
     const result = await provider.get('Leaderboard', []);
+    console.log("result", result);
     const cell = result.stack.readCell();
     const slice = cell.beginParse();
 
@@ -109,7 +122,18 @@ export class GameContract implements Contract {
     const mocksWon: bigint[] = [];
 
     // 读取地址数组长度
-    const length = Number(slice.loadUint(32));
+    const length = 3;
+
+    // 添加边界检查，确保长度有效
+    if (length <= 0) {
+      return {
+        playerAddresses: [],
+        playerNames: [],
+        battlesWon: [],
+        battlesLost: [],
+        mocksWon: []
+      };
+    }
 
     // 读取地址数组
     for (let i = 0; i < length; i++) {
@@ -165,12 +189,34 @@ export class GameContract implements Contract {
     return Number(result.stack.readNumber());
   }
 
-  async getBattle(provider: ContractProvider, idx: bigint): Promise<any> {
+  async getBattle(provider: ContractProvider, idx: bigint): Promise<{
+    player1: Address;
+    player2: Address;
+    startTime: bigint;
+    endTime: bigint;
+    player1Action: string;
+    player2Action: string;
+    player1LastMoveIsMock: boolean;
+    player2LastMoveIsMock: boolean;
+    winner: Address;
+  }> {
     const result = await provider.get('battle', [{
       type: 'int',
       value: idx
     }]);
-    return result.stack.readCell();
+    const stack = result.stack;
+
+    return {
+      player1: stack.readAddress(),
+      player2: stack.readAddress(),
+      startTime: BigInt(stack.readNumber()),
+      endTime: BigInt(stack.readNumber()),
+      player1Action: stack.readCell().beginParse().loadStringTail(),
+      player2Action: stack.readCell().beginParse().loadStringTail(),
+      player1LastMoveIsMock: stack.readBoolean(),
+      player2LastMoveIsMock: stack.readBoolean(),
+      winner: stack.readAddress(),
+    };
   }
 
   async getPlayer(provider: ContractProvider, playerAddress: Address): Promise<{
@@ -188,7 +234,6 @@ export class GameContract implements Contract {
     const result = await provider.get('player', [{
       type: "slice", cell: beginCell().storeAddress(playerAddress).endCell()
     }]);
-    console.log("result=========", result);
     const stack = result.stack;
 
     return {

@@ -1,0 +1,73 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.battleColumns {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.playerCard,
+.opponentCard {
+  flex: 1;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.playerCard {
+  background: rgba(100, 149, 237, 0.15);
+  border: 2px solid #6495ed;
+}
+
+.opponentCard {
+  background: rgba(220, 20, 60, 0.15);
+  border: 2px solid #dc143c;
+}
+
+.playerCard h3 {
+  color: #2c5282;
+}
+
+.opponentCard h3 {
+  color: #9B2C2C;
+}
+
+.stats {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.stats p {
+  margin: 0.8rem 0;
+  color: #2d3748;
+}
+
+.loadingCard,
+.errorCard {
+  padding: 3rem;
+  text-align: center;
+  background-color: hsla(0, 0%, 100%, 0.9);
+  border-radius: 12px;
+  max-width: 600px;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loadingCard h2 {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

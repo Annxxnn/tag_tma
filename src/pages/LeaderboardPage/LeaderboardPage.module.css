@@ -1,0 +1,107 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.buttonContainer {
+  margin-bottom: 20px;
+  align-self: flex-end;
+}
+
+.infoCard {
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 18px;
+  margin: 20px 0;
+}
+
+.error {
+  color: red;
+}
+
+.leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  display: flex;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+.tableRow {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.tableRow:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tableCell {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: black;
+}
+
+.tableCell:first-child {
+  flex: 0.5;
+}
+
+.backButton {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.backButton:hover {
+  background-color: #45a049;
+}
+
+.addressCell {
+  font-size: 0.85em;
+  word-break: break-all;
+}
+
+.dataSourceToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.toggleButton {
+  padding: 8px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toggleButton:hover {
+  background-color: #45a049;
+}

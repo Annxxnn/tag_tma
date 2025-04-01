@@ -3,6 +3,10 @@ import type { ComponentType, JSX } from 'react';
 import { MainPage } from '../pages/MainPage/MainPage';
 import { RegisterPlayerPage } from '../pages/RegisterPlayerPage/RegisterPlayerPage';
 import { PlayerInfoPage } from '../pages/PlayerInfoPage/PlayerInfoPage';
+import { BattleInfoPage } from '../pages/BattleInfoPage/BattleInfoPage';
+import { BattlePage } from '../pages/BattlePage/BattlePage';
+import { WinnerPage } from '../pages/WinnerPage/WinnerPage';
+import { LeaderboardPage } from '../pages/LeaderboardPage/LeaderboardPage.tsx';
 import { LaunchParamsPage } from '../pages/LaunchParamsPage.tsx';
 import { ThemeParamsPage } from '../pages/ThemeParamsPage.tsx';
 
@@ -19,6 +23,10 @@ export const routes: Route[] = [
   { path: '/', Component: MainPage },
   { path: '/register-player', Component: RegisterPlayerPage },
   { path: '/player-Info', Component: PlayerInfoPage },
+  { path: '/battle-Info/:battleId', Component: BattleInfoPage },
+  { path: '/battle', Component: BattlePage },
+  { path: '/winner', Component: WinnerPage },
+  { path: '/leaderboard', Component: LeaderboardPage },
   { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
   { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
   {
