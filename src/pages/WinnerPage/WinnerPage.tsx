@@ -33,6 +33,10 @@ export const WinnerPage = () => {
     } finally {
       if (isMounted) setIsLoading(false);
     }
+
+    return () => {
+      isMounted = false;
+    };
   };
 
   useEffect(() => {
