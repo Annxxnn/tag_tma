@@ -19,17 +19,17 @@ export const WinnerPage = () => {
       if (battleIdCounter !== undefined && isMounted) {
         const battle = await getBattle(BigInt(battleIdCounter));
         if (!battle) {
-          setError('未找到战斗信息');
+          if (isMounted) setError('未找到战斗信息');
           return;
         }
         const winnerAddr = battle.winner.toString();
-        setWinnerAddress(winnerAddr);
+        if (isMounted) setWinnerAddress(winnerAddr);
         const winner = await getPlayer(Address.parse(winnerAddr));
-        setWinnerName(winner?.name.toString() || '未知玩家');
+        if (isMounted) setWinnerName(winner?.name.toString() || '未知玩家');
       }
     } catch (err) {
       console.error('获取胜利者信息失败:', err);
-      setError('获取胜利者信息失败，请重试');
+      if (isMounted) setError('获取胜利者信息失败，请重试');
     } finally {
       if (isMounted) setIsLoading(false);
     }

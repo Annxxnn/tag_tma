@@ -5,7 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), basicSsl(), nodePolyfills({
+  plugins: [react(), basicSsl(), tsconfigPaths(), nodePolyfills({
     globals: {
       Buffer: true,
     }
@@ -15,6 +15,6 @@ export default defineConfig({
   },
   base: './',
   define: {
-    Buffer: globalThis.Buffer
+    Buffer: ['Buffer', 'global.Buffer']
   }
 });

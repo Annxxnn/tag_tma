@@ -82,14 +82,6 @@ export const ProgressBarContainer = styled.div`
   flex: 1;
 `;
 
-const BaseButtonContainer = styled.div`
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-`;
 
 export const BaseButton = styled.button`
   padding: 1rem 2rem;
