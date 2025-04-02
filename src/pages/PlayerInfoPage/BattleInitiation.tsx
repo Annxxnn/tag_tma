@@ -7,21 +7,15 @@ import { useTonWallet } from "@tonconnect/ui-react";
 export const BattleInitiation = ({ styles }: { styles: any }) => {
   const [opponentAddress, setOpponentAddress] = useState<Address | null>(null);
   const [loadingOpponent, setLoadingOpponent] = useState(true);
-  const [opponentError, setOpponentError] = useState('');
   const { getPlayerAddress, initiateBattle, getBattle, getPlayer, getBattleIdCounter } = useGameContract();
   const navigate = useNavigate();
   const Wallet = useTonWallet();
   useEffect(() => {
     const fetchOpponentAddress = async () => {
-      try {
-        const address = await getPlayerAddress(1);
-        setOpponentAddress(address);
-      } catch (error) {
-        setOpponentError('获取对手地址失败，请重试');
-        console.error('获取对手地址失败:', error);
-      } finally {
-        setLoadingOpponent(false);
-      }
+      const address = await getPlayerAddress(1);
+      setOpponentAddress(address);
+      setLoadingOpponent(false);
+
     };
     fetchOpponentAddress();
   }, [getPlayerAddress]);
@@ -70,8 +64,6 @@ export const BattleInitiation = ({ styles }: { styles: any }) => {
       <FlexBoxCol>
         {loadingOpponent ? (
           <p className={styles.loading}>加载对手信息中...</p>
-        ) : opponentError ? (
-          <p className={styles.error}>{opponentError}</p>
         ) : (
           <button
             className={styles.battleButton}
