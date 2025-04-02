@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useTonConnect } from '../../hooks/useTonConnect';
 import { useGameContract } from '../../hooks/useGameContract';
 import { Address } from 'ton-core';
 import { Card, FlexBoxCol, FlexBoxRow } from '../../components/styled/styled';
 import styles from './BattleInfoPage.module.css';
-import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTonWallet } from "@tonconnect/ui-react";
 interface BattlePlayerData {
@@ -16,9 +14,7 @@ interface BattlePlayerData {
 }
 
 export function BattleInfoPage() {
-  const { getPlayer, getPlayerAddress, getBattle } = useGameContract();
-  const { connected } = useTonConnect();
-  const { address } = useParams();
+  const { getPlayer, getPlayerAddress } = useGameContract();
   const [playerData, setPlayerData] = useState<BattlePlayerData | null>(null);
   const [opponentData, setOpponentData] = useState<BattlePlayerData | null>(null);
   const navigate = useNavigate();

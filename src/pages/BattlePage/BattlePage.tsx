@@ -1,5 +1,5 @@
 import { useGameContract } from '../../hooks/useGameContract';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { Address } from 'ton-core';
 import { useTonWallet } from "@tonconnect/ui-react";
@@ -7,11 +7,9 @@ import { FlexBoxCol, FlexBoxRow } from '../../components/styled/styled';
 import {
   PlayerArea,
   EnemyArea,
-  BaseButton,
   ActionButton,
   DefendButton,
   MockButton,
-  ErrorMessage,
   FloatingHelpButton,
   ProgressBarContainer,
   ProgressBarLabel,
@@ -150,11 +148,12 @@ animation: ${fadeIn} 1s ease-in-out forwards;
           actionType === 'Defend' ? '🛡️' :
             '😈'
       );
-
+      setShowEmoji(true); // 显示表情
       // 生成AI随机操作
       setCurrentPlayerTurn(2);
       await new Promise(resolve => setTimeout(resolve, 2000));
       setPlayerEmoji(null); // 2秒后隐藏表情
+      setShowEmoji(false); // 隐藏表情
       await new Promise(resolve => setTimeout(resolve, 10000)); // 等待10秒
       const aiAction = getRandomAction();
       // const aiAction = 'Mock';
@@ -165,9 +164,10 @@ animation: ${fadeIn} 1s ease-in-out forwards;
           aiAction === 'Defend' ? '🛡️' :
             '😈'
       );
+      setShowEmoji(true); // 显示表情
       await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒，确保动画完全消失
       setOpponentEmoji(null);
-
+      setShowEmoji(false); // 隐藏表情
       await new Promise(resolve => setTimeout(resolve, 500));
       // 将玩家操作和AI操作同时传给合约
       await enterBattleAction(actionType, aiAction);
@@ -241,7 +241,7 @@ animation: ${fadeIn} 1s ease-in-out forwards;
           const winner = battle!.winner.toString();
           console.log('胜利者:', winner);
           //等到10秒后跳转
-          await new Promise(resolve => setTimeout(resolve, 10000));
+          await new Promise(resolve => setTimeout(resolve, 5000));
           //将battleIdCounter传入winner
           navigate(`/winner`);
         }
@@ -335,6 +335,22 @@ animation: ${fadeIn} 1s ease-in-out forwards;
 
   return (
     <FlexBoxRow>
+      {/* 添加错误提示区域 */}
+      {error && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#ff4444',
+          color: 'white',
+          padding: '10px',
+          textAlign: 'center',
+          zIndex: 1000
+        }}>
+          {error}
+        </div>
+      )}
       <div style={{
         position: 'absolute',
         top: 20,
@@ -351,7 +367,7 @@ animation: ${fadeIn} 1s ease-in-out forwards;
       {showHelpModal && <HelpModal onClose={handleCloseHelp} />}
       <PlayerArea>
         <h2>我方玩家</h2>
-        {playerEmoji && (
+        {showEmoji && playerEmoji && (
           <EmojiContainer>
             {playerEmoji}
           </EmojiContainer>
@@ -403,7 +419,7 @@ animation: ${fadeIn} 1s ease-in-out forwards;
       </div>
       <EnemyArea>
         <h2>敌方玩家</h2>
-        {opponentEmoji && (
+        {showEmoji && opponentEmoji && (
           <EmojiContainer>
             {opponentEmoji}
           </EmojiContainer>

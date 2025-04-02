@@ -2,16 +2,13 @@ import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import { useGameContract } from "../../hooks/useGameContract";
 import { useTonConnect } from "../../hooks/useTonConnect";
 import { useState, useEffect } from "react";
-import { notification } from "antd";
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
   FlexBoxCol,
-  FlexBoxRow,
   Button,
   Input,
 } from "../../components/styled/styled";
-import { Address } from "ton-core";
 // 在文件顶部添加样式导入
 import styles from './RegisterPlayerPage.module.css';
 export function RegisterPlayerPage() {
@@ -22,7 +19,7 @@ export function RegisterPlayerPage() {
     const storedPlayers = localStorage.getItem('registeredPlayers');
     return storedPlayers ? JSON.parse(storedPlayers) : [];
   });
-  const { registerPlayer, getPlayer } = useGameContract();
+  const { registerPlayer } = useGameContract();
   const [playerName, setPlayerName] = useState("");
   const [loading, setLoading] = useState(false);
   const Wallet = useTonWallet();

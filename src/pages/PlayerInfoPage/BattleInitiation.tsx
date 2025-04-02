@@ -8,15 +8,20 @@ export const BattleInitiation = ({ styles }: { styles: any }) => {
   const [opponentAddress, setOpponentAddress] = useState<Address | null>(null);
   const [loadingOpponent, setLoadingOpponent] = useState(true);
   const [opponentError, setOpponentError] = useState('');
-  const { getPlayerAddress, initiateBattle, getBattle, getPlayer, getBattleIdCounter, setBattleId } = useGameContract();
+  const { getPlayerAddress, initiateBattle, getBattle, getPlayer, getBattleIdCounter } = useGameContract();
   const navigate = useNavigate();
   const Wallet = useTonWallet();
   useEffect(() => {
     const fetchOpponentAddress = async () => {
-
-      const address = await getPlayerAddress(1);
-      setOpponentAddress(address);
-      setLoadingOpponent(false);
+      try {
+        const address = await getPlayerAddress(1);
+        setOpponentAddress(address);
+      } catch (error) {
+        setOpponentError('获取对手地址失败，请重试');
+        console.error('获取对手地址失败:', error);
+      } finally {
+        setLoadingOpponent(false);
+      }
     };
     fetchOpponentAddress();
   }, [getPlayerAddress]);

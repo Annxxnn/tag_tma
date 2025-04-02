@@ -1,6 +1,5 @@
 import { useGameContract } from '../../hooks/useGameContract';
 import { Address } from 'ton-core';
-import { useTonWallet } from "@tonconnect/ui-react";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './WinnerPage.module.css';
@@ -12,7 +11,6 @@ export const WinnerPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const wallet = useTonWallet();
 
   const loadWinnerInfo = async () => {
     let isMounted = true;

@@ -3,15 +3,12 @@ import { useTonClient } from "./useTonClient";
 import { useAsyncInitialize } from "./useAsyncInitialize";
 import { useTonConnect } from "./useTonConnect";
 import { Address, OpenedContract } from "ton-core";
-import { useTonWallet } from "@tonconnect/ui-react";
-import { init } from "../init";
 
 
 
 
 export function useGameContract() {
   const { client } = useTonClient();
-  const wallet = useTonWallet();
   const { sender } = useTonConnect();
   const TonGameContract = useAsyncInitialize(async () => {
     console.log("client", client);

@@ -1,5 +1,4 @@
 import styled, { keyframes } from 'styled-components';
-import { FlexBoxCol } from '../../components/styled/styled';
 
 // 将fadeIn动画定义移动到文件顶部
 export const fadeIn = keyframes`

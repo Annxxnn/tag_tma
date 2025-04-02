@@ -170,9 +170,6 @@ export function LeaderboardPage() {
     navigate('/player-Info');
   };
 
-  const handleRefresh = () => {
-    fetchLeaderboard();
-  };
 
   const handleSortChange = (field: 'battlesWon' | 'mocksWon' | 'battlesLost') => {
     setSortBy(field);
@@ -181,13 +178,13 @@ export function LeaderboardPage() {
     indices.sort((a, b) => {
       const valueA = Number(
         field === 'battlesWon' ? leaderboardData.battlesWon[a] :
-        field === 'mocksWon' ? leaderboardData.mocksWon[a] :
-        leaderboardData.battlesLost[a]
+          field === 'mocksWon' ? leaderboardData.mocksWon[a] :
+            leaderboardData.battlesLost[a]
       );
       const valueB = Number(
         field === 'battlesWon' ? leaderboardData.battlesWon[b] :
-        field === 'mocksWon' ? leaderboardData.mocksWon[b] :
-        leaderboardData.battlesLost[b]
+          field === 'mocksWon' ? leaderboardData.mocksWon[b] :
+            leaderboardData.battlesLost[b]
       );
       return valueB - valueA; // 降序排列
     });
@@ -206,24 +203,24 @@ export function LeaderboardPage() {
       <FlexBoxCol className={styles.container}>
         <div className={styles.buttonContainer}>
           <TonConnectButton />
-          <button 
-                className={styles.refreshButton}
-                style={{ marginTop: '20px' }}
-                onClick={async () => {
-                  setLeaderboardData({
-                    playerAddresses: [],
-                    playerNames: [],
-                    battlesWon: [],
-                    battlesLost: [],
-                    mocksWon: []
-                  });
-                  setError(null);
-                  setLoading(true);
-                  await fetchLeaderboard();
-                }}
-              >
-                {loading ? '刷新中...' : '刷新'}
-              </button>
+          <button
+            className={styles.refreshButton}
+            style={{ marginTop: '20px' }}
+            onClick={async () => {
+              setLeaderboardData({
+                playerAddresses: [],
+                playerNames: [],
+                battlesWon: [],
+                battlesLost: [],
+                mocksWon: []
+              });
+              setError(null);
+              setLoading(true);
+              await fetchLeaderboard();
+            }}
+          >
+            {loading ? '刷新中...' : '刷新'}
+          </button>
         </div>
 
         <Card className={styles.infoCard}>

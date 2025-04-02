@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGameContract } from '../../hooks/useGameContract';
 import { FlexBoxCol, Card } from '../../components/styled/styled';
 
 export const LeaderboardView = ({ styles }: { styles: any }) => {
   const [loading, setLoading] = useState(false);
-  const { getLeaderboard } = useGameContract();
   const navigate = useNavigate();
 
   const handleViewLeaderboard = async () => {
