@@ -40,11 +40,8 @@ export const WinnerPage = () => {
   };
 
   useEffect(() => {
-    let isMounted = true;
     loadWinnerInfo();
-    return () => {
-      isMounted = false;
-    };
+    return () => { };
   }, []);
 
   loadWinnerInfo();
