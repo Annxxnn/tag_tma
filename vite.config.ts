@@ -8,13 +8,15 @@ export default defineConfig({
   plugins: [react(), basicSsl(), tsconfigPaths(), nodePolyfills({
     globals: {
       Buffer: true,
-    }
+      process: true
+    },
+    protocolImports: true
   })],
   build: {
     outDir: './docs'
   },
-  base: './',
+  base: '/',
   define: {
-    Buffer: ['Buffer', 'global.Buffer']
+    global: {}
   }
 });
