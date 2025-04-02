@@ -10,7 +10,6 @@ export const BuffRequest = ({ styles, onBuffSuccess }: { styles: any, onBuffSucc
     try {
       setLoading(true);
       await requestBuff(true);
-      alert('增益请求成功');
       onBuffSuccess();
     } catch (error) {
       alert('增益请求失败: ' + (error instanceof Error ? error.message : '未知错误'));
@@ -29,7 +28,7 @@ export const BuffRequest = ({ styles, onBuffSuccess }: { styles: any, onBuffSucc
             className={styles.battleButton}
             onClick={handleRequestBuff}
             disabled={loading}
-          >
+          ><span className={styles.icon}>🐱‍🏍</span>
             请求增益
           </button>
         )}

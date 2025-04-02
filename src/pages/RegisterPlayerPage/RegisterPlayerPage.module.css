@@ -1,0 +1,188 @@
+.container {
+  padding: 2rem;
+  border-radius: 8px;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttonContainer {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  z-index: 1;
+}
+
+.mainContent {
+  display: flex;
+  width: 80% !important;
+  max-width: 800px;
+  gap: 2rem;
+  margin-top: 2rem;
+  height: calc(100vh - 500px);
+  /* 占据页面高度减去顶部和底部的间距 */
+  min-height: 500px;
+  /* 设置最小高度 */
+  justify-content: center;
+}
+
+.infoCard {
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #000000;
+}
+
+.inputRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.inputRow label {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.inputRow input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.buttonWrapper {
+  margin-top: auto;
+  /* 使按钮容器自动填充剩余空间 */
+  padding-top: 2rem;
+  /* 增加顶部间距 */
+}
+
+.button {
+  height: 100px;
+  /* 增加按钮高度 */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: block;
+  font-size: 2.5rem;
+  color: #666;
+  border-radius: 15px;
+}
+
+.button.Active {
+  background-color: #f0f8ff;
+}
+
+.button.Disabled {
+  background-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+
+.gameHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.gameLogo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.buttonIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.decorativeElements {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.characterLeft {
+  position: absolute;
+  left: -200px;
+  bottom: 0;
+  width: 180px;
+}
+
+.characterRight {
+  position: absolute;
+  right: -200px;
+  bottom: 0;
+  width: 180px;
+}
+
+
+.description {
+  text-align: center;
+  margin: 1rem 0;
+  line-height: 1.6;
+  color: #666;
+  font-size: 2rem;
+}
+
+.inputIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
+  color: #4a90e2;
+}
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.funnyInput {
+  padding: 12px 40px;
+  border-radius: 25px;
+  border: 2px solid #ff7f50;
+  font-size: 1rem;
+  background-color: #fff8dc;
+  transition: all 0.3s ease;
+
+}
+
+.funnyInput:focus {
+  outline: none;
+  border-color: #ff4500;
+  box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.2);
+}
+
+.inputIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.inputDecoration {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}

@@ -28,7 +28,7 @@ export function LeaderboardPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<'battlesWon' | 'mocksWon'>('battlesWon');
+  const [sortBy, setSortBy] = useState<'battlesWon' | 'mocksWon' | 'battlesLost'>('battlesWon');
 
   useEffect(() => {
     // 检查是否已连接，如果未连接则导航到连接页面
@@ -174,13 +174,21 @@ export function LeaderboardPage() {
     fetchLeaderboard();
   };
 
-  const handleSortChange = (field: 'battlesWon' | 'mocksWon') => {
+  const handleSortChange = (field: 'battlesWon' | 'mocksWon' | 'battlesLost') => {
     setSortBy(field);
     // 重新排序数据
     const indices = Array.from({ length: leaderboardData.playerNames.length }, (_, i) => i);
     indices.sort((a, b) => {
-      const valueA = Number(field === 'battlesWon' ? leaderboardData.battlesWon[a] : leaderboardData.mocksWon[a]);
-      const valueB = Number(field === 'battlesWon' ? leaderboardData.battlesWon[b] : leaderboardData.mocksWon[b]);
+      const valueA = Number(
+        field === 'battlesWon' ? leaderboardData.battlesWon[a] :
+        field === 'mocksWon' ? leaderboardData.mocksWon[a] :
+        leaderboardData.battlesLost[a]
+      );
+      const valueB = Number(
+        field === 'battlesWon' ? leaderboardData.battlesWon[b] :
+        field === 'mocksWon' ? leaderboardData.mocksWon[b] :
+        leaderboardData.battlesLost[b]
+      );
       return valueB - valueA; // 降序排列
     });
 
@@ -196,12 +204,26 @@ export function LeaderboardPage() {
   return (
     <FlexBoxCol>
       <FlexBoxCol className={styles.container}>
-        <h2>排行榜</h2>
         <div className={styles.buttonContainer}>
           <TonConnectButton />
-          <button className={styles.refreshButton} onClick={handleRefresh} disabled={loading}>
-            {loading ? '刷新中...' : '刷新数据'}
-          </button>
+          <button 
+                className={styles.refreshButton}
+                style={{ marginTop: '20px' }}
+                onClick={async () => {
+                  setLeaderboardData({
+                    playerAddresses: [],
+                    playerNames: [],
+                    battlesWon: [],
+                    battlesLost: [],
+                    mocksWon: []
+                  });
+                  setError(null);
+                  setLoading(true);
+                  await fetchLeaderboard();
+                }}
+              >
+                {loading ? '刷新中...' : '刷新'}
+              </button>
         </div>
 
         <Card className={styles.infoCard}>
@@ -220,6 +242,12 @@ export function LeaderboardPage() {
                   onClick={() => handleSortChange('mocksWon')}
                 >
                   按嘲讽胜场排序
+                </button>
+                <button
+                  className={`${styles.sortButton} ${sortBy === 'battlesLost' ? styles.active : ''}`}
+                  onClick={() => handleSortChange('battlesLost')}
+                >
+                  按败场排序
                 </button>
               </div>
             </div>

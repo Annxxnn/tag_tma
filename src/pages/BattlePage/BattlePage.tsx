@@ -1,5 +1,5 @@
 import { useGameContract } from '../../hooks/useGameContract';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { Address } from 'ton-core';
 import { useTonWallet } from "@tonconnect/ui-react";
@@ -9,12 +9,14 @@ import {
   EnemyArea,
   BaseButton,
   ActionButton,
+  DefendButton,
   MockButton,
   ErrorMessage,
   FloatingHelpButton,
   ProgressBarContainer,
   ProgressBarLabel,
-  ProgressBar
+  ProgressBar,
+  fadeIn
 } from './BattlePage.styles';
 import { useNavigate } from 'react-router-dom';
 import { HelpModal } from './HelpModal/HelpModal';
@@ -66,11 +68,26 @@ export const BattlePage = () => {
     defense: bigint;
     health: bigint;
   } | null>(null);
+
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  // 在文件顶部添加
+  const EmojiContainer = styled.div`
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 10rem;
+opacity: 0;
+animation: ${fadeIn} 1s ease-in-out forwards;
+`;
+
   // 更新handleAction处理逻辑
   const getRandomAction = () => {
     const actions = ['Attack', 'Defend', 'Mock'];
     return actions[Math.floor(Math.random() * actions.length)];
   };
+
 
   // 重置游戏的函数
   const handleResetGame = async () => {
@@ -110,24 +127,48 @@ export const BattlePage = () => {
     }
   };
   //处理操作按钮
+  // 在state中添加新的状态
+  const [playerEmoji, setPlayerEmoji] = useState<string | null>(null);
+  const [opponentEmoji, setOpponentEmoji] = useState<string | null>(null);
+
+  // 修改handleAction函数
   const handleAction = async (actionType: string) => {
+    const battleIdCounter = BigInt(await getBattleIdCounter() || 0);
     try {
       //获取battle
-      const battleIdCounter = BigInt(await getBattleIdCounter() || 0);
       const battle = await getBattle(battleIdCounter);
       console.log('battle:', battle);
       setIsLoading(true);
       setError('');
+      setShowEmoji(true);
       console.log(`玩家正在执行操作: ${actionType}`);
 
       // 生成AI随机操作
-      //模拟选择的过程，间隔10s
+      //修改玩家表情
+      setPlayerEmoji(
+        actionType === 'Attack' ? '⚔️' :
+          actionType === 'Defend' ? '🛡️' :
+            '😈'
+      );
+
+      // 生成AI随机操作
       setCurrentPlayerTurn(2);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setPlayerEmoji(null); // 2秒后隐藏表情
+      await new Promise(resolve => setTimeout(resolve, 10000)); // 等待10秒
       const aiAction = getRandomAction();
       // const aiAction = 'Mock';
-      console.log(`敌方玩家执行操作: ${aiAction}`);
+      console.log(`敌方正在执行操作: ${aiAction}`);
+      // 设置敌方表情
+      setOpponentEmoji(
+        aiAction === 'Attack' ? '⚔️' :
+          aiAction === 'Defend' ? '🛡️' :
+            '😈'
+      );
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒，确保动画完全消失
+      setOpponentEmoji(null);
 
+      await new Promise(resolve => setTimeout(resolve, 500));
       // 将玩家操作和AI操作同时传给合约
       await enterBattleAction(actionType, aiAction);
       setCurrentPlayerTurn(1);
@@ -136,19 +177,18 @@ export const BattlePage = () => {
 
       fetchPlayerData();
 
-      await checkBattleResult();
+      await checkBattleResult(battleIdCounter);
     } catch (err) {
       setError('执行操作失败，请检查网络连接');
       console.error(err);
     } finally {
       setIsLoading(false);
-
       // 启动定时器，每隔5秒获取最新数据
       const dataFetchInterval = setInterval(fetchPlayerData, 5000);
 
       // 启动定时器，每隔10秒检查战斗结果
       const resultCheckInterval = setInterval(async () => {
-        await checkBattleResult();
+        await checkBattleResult(battleIdCounter);
       }, 10000);
 
       // 在组件卸载时清除定时器
@@ -192,29 +232,25 @@ export const BattlePage = () => {
     }
   };
   //获取结果
-  const checkBattleResult = async () => {
+  const checkBattleResult = async (battleIdCounter: bigint) => {
     try {
-      //获取opponentAddress的battleId
-      if (!opponentAddress) {
-        const addr = await getPlayerAddress(1);
-        setOpponentAddress(addr);
-      }
-      const opponent = await getPlayer(opponentAddress || await getPlayerAddress(1));
-      console.log('battleId:', opponent!.battleId.toString());
-      if (opponent?.battleId != 0n) {
-        const battle = await getBattle(opponent!.battleId);
+      console.log('battleId:', battleIdCounter);
+      if (battleIdCounter != 0n) {
+        const battle = await getBattle(battleIdCounter);
         if (battle!.winner.toString() !== 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c') {
           const winner = battle!.winner.toString();
           console.log('胜利者:', winner);
-
-          navigate('/winner');
+          //等到10秒后跳转
+          await new Promise(resolve => setTimeout(resolve, 10000));
+          //将battleIdCounter传入winner
+          navigate(`/winner`);
         }
       }
     } catch (err) {
       console.error('检查战斗结果失败:', err);
       if (err instanceof Error && err.message.includes('429')) {
         await new Promise(resolve => setTimeout(resolve, 3000)); // 3秒后重试
-        return checkBattleResult();
+        return checkBattleResult(battleIdCounter);
       }
     }
   };
@@ -299,9 +335,6 @@ export const BattlePage = () => {
 
   return (
     <FlexBoxRow>
-      <FloatingHelpButton onClick={handleOpenHelp}>
-        战斗规则说明
-      </FloatingHelpButton>
       <div style={{
         position: 'absolute',
         top: 20,
@@ -318,77 +351,79 @@ export const BattlePage = () => {
       {showHelpModal && <HelpModal onClose={handleCloseHelp} />}
       <PlayerArea>
         <h2>我方玩家</h2>
+        {playerEmoji && (
+          <EmojiContainer>
+            {playerEmoji}
+          </EmojiContainer>
+        )}
         <FlexBoxCol style={{ flex: 1 }}>
           <ProgressBarContainer>
-            <ProgressBarLabel>生命值</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{playerData?.health.toString()}</div>
-            <ProgressBar value={initialPlayerData?.health ? Math.round(Number(playerData?.health || 0) / Number(initialPlayerData.health) * 100) : 100} />
-            <ProgressBarLabel>攻击力</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{playerData?.attack.toString()}</div>
-            <ProgressBar value={initialPlayerData?.attack ? Math.round(Number(playerData?.attack || 0) / Number(initialPlayerData.attack) * 100) : 100} />
-            <ProgressBarLabel>防御力</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{playerData?.defense.toString()}</div>
-            <ProgressBar value={initialPlayerData?.defense ? Math.round(Number(playerData?.defense || 0) / Number(initialPlayerData.defense) * 100) : 100} />
+            <ProgressBarLabel>❤️生命值:{playerData?.health.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialPlayerData?.health ? Math.round(Number(playerData?.health || 0) / Number(initialPlayerData.health) * 100) : 100} style={{ direction: 'rtl' }} />
+            <div style={{ marginBottom: '40px' }}></div>
+            <ProgressBarLabel>⚔️攻击力:{playerData?.attack.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialPlayerData?.attack ? Math.round(Number(playerData?.attack || 0) / Number(initialPlayerData.attack) * 100) : 100} style={{ direction: 'rtl' }} />
+            <div style={{ marginBottom: '40px' }}></div>
+            <ProgressBarLabel>🛡️防御力:{playerData?.defense.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialPlayerData?.defense ? Math.round(Number(playerData?.defense || 0) / Number(initialPlayerData.defense) * 100) : 100} style={{ direction: 'rtl' }} />
           </ProgressBarContainer>
         </FlexBoxCol>
-        <div style={{ position: 'absolute', bottom: -150, left: 0, right: 0, display: 'flex', justifyContent: 'space-around' }}>
-          <ActionButton
-            onClick={() => handleAction('Attack')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '攻击'}
-          </ActionButton>
-          <ActionButton
-            onClick={() => handleAction('Defend')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '防御'}
-          </ActionButton>
-          <MockButton
-            onClick={() => handleAction('Mock')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '嘲讽'}
-          </MockButton>
-        </div>
       </PlayerArea>
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px'
+      }}>
+        <ActionButton
+          onClick={() => handleAction('Attack')}
+          disabled={isLoading}
+          style={{ marginBottom: '260px', marginTop: '5px' }}
+        >
+          {isLoading ? '处理中...' : '攻击'}
+        </ActionButton>
+        <DefendButton
+          onClick={() => handleAction('Defend')}
+          disabled={isLoading}
+          style={{ marginBottom: '260px' }}
+        >
+          {isLoading ? '处理中...' : '防御'}
+        </DefendButton>
+        <MockButton
+          onClick={() => handleAction('Mock')}
+          disabled={isLoading}
 
+        >
+          {isLoading ? '处理中...' : '嘲讽'}
+        </MockButton>
+
+      </div>
       <EnemyArea>
         <h2>敌方玩家</h2>
+        {opponentEmoji && (
+          <EmojiContainer>
+            {opponentEmoji}
+          </EmojiContainer>
+        )}
         <FlexBoxCol style={{ flex: 1 }}>
           <ProgressBarContainer>
-            <ProgressBarLabel>生命值</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{opponentData?.health.toString()}</div>
-            <ProgressBar value={initialOpponentData?.health ? Math.round(Number(opponentData?.health || 0) / Number(initialOpponentData.health) * 100) : 100} />
-            <ProgressBarLabel>攻击力</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{opponentData?.attack.toString()}</div>
-            <ProgressBar value={initialOpponentData?.attack ? Math.round(Number(opponentData?.attack || 0) / Number(initialOpponentData.attack) * 100) : 100} />
-            <ProgressBarLabel>防御力</ProgressBarLabel>
-            <div style={{ marginBottom: 5, fontSize: '1.2em', fontWeight: 'bold' }}>{opponentData?.defense.toString()}</div>
-            <ProgressBar value={initialOpponentData?.defense ? Math.round(Number(opponentData?.defense || 0) / Number(initialOpponentData.defense) * 100) : 100} />
+            <ProgressBarLabel>❤️生命值:{opponentData?.health.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialOpponentData?.health ? Math.round(Number(opponentData?.health || 0) / Number(initialOpponentData.health) * 100) : 100} style={{ direction: 'ltr' }} />
+            <div style={{ marginBottom: '40px' }}></div>
+            <ProgressBarLabel>⚔️攻击力:{opponentData?.attack.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialOpponentData?.attack ? Math.round(Number(opponentData?.attack || 0) / Number(initialOpponentData.attack) * 100) : 100} style={{ direction: 'ltr' }} />
+            <div style={{ marginBottom: '40px' }}></div>
+            <ProgressBarLabel>🛡️防御力:{opponentData?.defense.toString()}</ProgressBarLabel>
+            <ProgressBar value={initialOpponentData?.defense ? Math.round(Number(opponentData?.defense || 0) / Number(initialOpponentData.defense) * 100) : 100} style={{ direction: 'ltr' }} />
           </ProgressBarContainer>
         </FlexBoxCol>
-        {/* <div style={{ position: 'absolute', bottom: -150, left: 0, right: 0, display: 'flex', justifyContent: 'space-around' }}>
-          <ActionButton
-            onClick={() => handleAction('Attack')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '攻击'}
-          </ActionButton>
-          <ActionButton
-            onClick={() => handleAction('Defend')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '防御'}
-          </ActionButton>
-          <MockButton
-            onClick={() => handleAction('Mock')}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : '嘲讽'}
-          </MockButton>
-        </div> */}
       </EnemyArea>
+      <FloatingHelpButton onClick={handleOpenHelp}>
+        战斗规则说明
+      </FloatingHelpButton>
     </FlexBoxRow>
   );
 };

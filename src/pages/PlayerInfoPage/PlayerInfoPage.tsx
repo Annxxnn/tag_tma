@@ -99,16 +99,26 @@ export function PlayerInfoPage() {
     return (
       <FlexBoxCol>
         <FlexBoxCol className={styles.container}>
-          <h2>玩家信息</h2>
           <div className={styles.buttonContainer}>
             <TonConnectButton />
           </div>
-          <Card className={styles.infoCard}>
-            <p className={styles.loading}>加载中...</p>
-          </Card>
+          <div className={styles.mainContent}>
+            <Card className={styles.infoCard}>
+              <FlexBoxCol>
+                <h3>玩家信息</h3>
+                <div className={styles.infoRow}><span className={styles.icon}>👤</span><p>名称: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>❤️</span><p>生命值: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⚔️</span><p>攻击力: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>🛡️</span><p>防御力: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>🏆</span><p>胜利场次: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>💀</span><p>失败场次: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⏱️</span><p>上次增益时间: 加载中...</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⚔️</span><p>战斗ID: 加载中...</p></div>
+              </FlexBoxCol>
+            </Card>
+          </div>
         </FlexBoxCol>
       </FlexBoxCol>
-
     );
   }
 
@@ -119,16 +129,6 @@ export function PlayerInfoPage() {
           <h2>玩家信息</h2>
           <div className={styles.buttonContainer}>
             <TonConnectButton />
-            <button
-              className={styles.refreshButton}
-              onClick={async () => {
-                setPlayerData(null);
-                setError('');
-                setLoading(true);
-              }}
-            >
-              刷新
-            </button>
           </div>
           <Card className={styles.infoCard}>
             <p className={styles.error}>{error}</p>
@@ -146,8 +146,10 @@ export function PlayerInfoPage() {
           <TonConnectButton />
           <button
             className={styles.refreshButton}
+            style={{ marginTop: '20px' }}
             onClick={async () => {
               setPlayerData(null);
+              setError('');
               setLoading(true);
             }}
           >
@@ -155,30 +157,34 @@ export function PlayerInfoPage() {
           </button>
         </div>
 
-        {wallet && playerData && (
-          <Card className={styles.infoCard}>
-            <FlexBoxCol>
-              <h3>玩家信息</h3>
-              <p>ID: {playerData.id.toString()}</p>
-              <p>名称: {playerData.name}</p>
-              <p>生命值: {playerData.health.toString()}</p>
-              <p>攻击力: {playerData.attack.toString()}</p>
-              <p>防御力: {playerData.defense.toString()}</p>
-              <p>胜利场次: {playerData.battlesWon.toString()}</p>
-              <p>失败场次: {playerData.battlesLost.toString()}</p>
-              <p>上次增益时间: {Number(playerData.lastBuffTime) === 0 ? null : new Date(Number(playerData.lastBuffTime) * 1000).toLocaleString()}</p>
-              <p>战斗ID: {playerData.battleId.toString()}</p>
-            </FlexBoxCol>
-          </Card>
-        )}
-        {/* 战斗按钮组件 */}
-        <BattleInitiation styles={styles} />
-        {/* 请求增益按钮组件 */}
-        <BuffRequest styles={styles} onBuffSuccess={() => {
-          setPlayerData(null);
-          setLoading(true);
-        }} />
-        <LeaderboardView styles={styles} />
+        <div className={styles.mainContent}>
+          {wallet && playerData && (
+            <Card className={styles.infoCard}>
+              <FlexBoxCol>
+                <h3>玩家信息</h3>
+                <div className={styles.infoRow}><span className={styles.icon}>👤</span><p>名称: {playerData.name}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>❤️</span><p>生命值: {playerData.health.toString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⚔️</span><p>攻击力: {playerData.attack.toString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>🛡️</span><p>防御力: {playerData.defense.toString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>🏆</span><p>胜利场次: {playerData.battlesWon.toString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>💀</span><p>失败场次: {playerData.battlesLost.toString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⏱️</span><p>上次增益时间: {Number(playerData.lastBuffTime) === 0 ? null : new Date(Number(playerData.lastBuffTime) * 1000).toLocaleString()}</p></div>
+                <div className={styles.infoRow}><span className={styles.icon}>⚔️</span><p>战斗ID: {playerData.battleId.toString()}</p></div>
+              </FlexBoxCol>
+            </Card>
+          )}
+
+          <div className={styles.actionPanel}>
+            {/* 战斗按钮组件 */}
+            <BattleInitiation styles={styles} />
+            {/* 请求增益按钮组件 */}
+            <BuffRequest styles={styles} onBuffSuccess={() => {
+              setPlayerData(null);
+              setLoading(true);
+            }} />
+            <LeaderboardView styles={styles} />
+          </div>
+        </div>
       </FlexBoxCol>
     </FlexBoxCol>
   );

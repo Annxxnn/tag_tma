@@ -1,5 +1,5 @@
 .container {
-  background-color: hsla(0, 0.00%, 100.00%, 0.50);
+  /* background-color: hsla(0, 0.00%, 100.00%, 0.50); */
   padding: 2rem;
   border-radius: 8px;
   min-height: 100vh;
@@ -16,11 +16,14 @@ h3 {
   font-size: 1.5rem !important;
   font-weight: bold;
   margin-bottom: 1.5rem;
+  color: #000000;
 }
 
 p {
   color: rgb(31, 31, 31) !important;
   margin: 0.8rem 0;
+  font-size: 1.3rem;
+  line-height: 1.5;
 }
 
 .loading {
@@ -31,6 +34,28 @@ p {
 
 error {
   color: #ff4444 !important;
+}
+
+.refreshButton {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 20px;
+  width: 150px;
+  height: 40px;
+  top: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.refreshButton:hover {
+  background-color: #ffffff;
+  transform: scale(1.05);
+}
+
+.refreshButton:active {
+  transform: scale(0.95);
 }
 
 .buttonContainer {
@@ -46,30 +71,125 @@ error {
   padding: 20px;
 }
 
+.mainContent {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
 .infoCard {
-  margin-top: 20px;
-  width: 90%;
-  max-width: 600px;
+  flex: 2;
+  margin-top: 0;
+  width: 100%;
+  max-width: 800px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7) !important;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.actionPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: transparent;
+}
+
+
+
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .actionCard {
-  margin-top: 20px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  animation: colorChange 5s infinite alternate, pulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+@keyframes colorChange {
+  from {
+    background-color: white;
+  }
+
+  to {
+    background-color: #f0f8ff;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .battleButton {
   padding: 10px 20px;
-  background-color: #cccccc;
-  color: white;
+  color: rgb(62, 51, 51);
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 20px;
   cursor: pointer;
   margin: 10px 0;
   width: 100%;
   box-sizing: border-box;
+  animation: buttonColorChange 5s infinite alternate, buttonPulse 2s ease-in-out infinite;
+  transition: all 0.2s ease;
+}
+
+@keyframes buttonColorChange {
+  from {
+    background-color: white;
+  }
+
+  to {
+    background-color: #f0f8ff;
+  }
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  70% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .battleButton:hover {
@@ -79,4 +199,14 @@ error {
 .battleButton:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.loading {
+  color: #666;
+  text-align: center;
+}
+
+.error {
+  color: #dc143c;
+  text-align: center;
 }

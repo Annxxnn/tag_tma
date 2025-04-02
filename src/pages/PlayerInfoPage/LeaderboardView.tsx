@@ -30,7 +30,7 @@ export const LeaderboardView = ({ styles }: { styles: any }) => {
             className={styles.battleButton}
             onClick={handleViewLeaderboard}
             disabled={loading}
-          >
+          ><span className={styles.icon}>📊</span>
             查看排行榜
           </button>
         )}

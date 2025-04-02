@@ -1,0 +1,89 @@
+.actionCard {
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  animation: colorChange 5s infinite alternate, pulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+@keyframes colorChange {
+  from {
+    background-color: white;
+  }
+
+  to {
+    background-color: #f0f8ff;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.battleButton {
+  padding: 10px 20px;
+  color: rgb(189, 74, 74);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  animation: buttonColorChange 3s infinite alternate, buttonPulse 1.5s ease-in-out infinite;
+  transition: all 0.2s ease;
+}
+
+@keyframes buttonColorChange {
+  from {
+    background-color: #f8f8f8;
+  }
+
+  to {
+    background-color: #ffecec;
+  }
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  70% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.battleButton:hover {
+  background-color: #b3b3b3;
+}
+
+.battleButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.loading {
+  color: #666;
+  text-align: center;
+}
+
+.error {
+  color: #dc143c;
+  text-align: center;
+}

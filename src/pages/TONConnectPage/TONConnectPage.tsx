@@ -26,14 +26,19 @@ export const TONConnectPage: FC = () => {
       <Page>
         <Placeholder
           className="ton-connect-page__placeholder"
-          header="TON Connect"
+          header={
+            <span style={{ fontSize: '5rem', marginBottom: '4rem' }}>TON Connect</span>
+          }
           description={
             <>
-              <Text>
+              <Text style={{ fontSize: '2rem', marginBottom: '4rem' }}>
                 To start the game, it is required to connect your
                 wallet
               </Text>
-              <TonConnectButton className="ton-connect-page__button" />
+              <TonConnectButton
+                className="ton-connect-page__button"
+                style={{ transform: 'scale(1.2)', marginTop: '4rem' }}
+              />
             </>
           }
         />

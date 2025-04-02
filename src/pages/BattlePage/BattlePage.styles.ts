@@ -1,16 +1,26 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { FlexBoxCol } from '../../components/styled/styled';
 
-
+// 将fadeIn动画定义移动到文件顶部
+export const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+`;
 
 export const ProgressBarLabel = styled.span`
-  font-size: 0.9rem;
+  font-size: 2rem;
   color: #2d3748;
 `;
 
 export const ProgressBar = styled.div<{ value: number; prevValue?: number }>`
   width: ${({ value }) => value}%;
-  height: 1.5rem;
+  height: 2.5rem;
   background-color: #4299e1;
   border-radius: 4px;
   transition: width 0.3s ease;
@@ -18,8 +28,10 @@ export const ProgressBar = styled.div<{ value: number; prevValue?: number }>`
   &::after {
     content: '${({ value }) => value}%';
     color: white;
-    display: block;
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
     padding-right: 5px;
   }
 `;
@@ -60,7 +72,7 @@ export const EnemyArea = styled.div`
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 10px;
+  margin: 10px 10px 10px 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,6 +112,14 @@ export const ActionButton = styled(BaseButton)`
 
   &:hover:not(:disabled) {
     background: #2b6cb0;
+  }
+`;
+export const DefendButton = styled(BaseButton)`
+  background:rgb(136, 187, 119);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background:rgb(120, 136, 93);
   }
 `;
 

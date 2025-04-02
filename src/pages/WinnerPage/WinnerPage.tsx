@@ -3,8 +3,8 @@ import { Address } from 'ton-core';
 import { useTonWallet } from "@tonconnect/ui-react";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-
+import styles from './WinnerPage.module.css';
+import { TonConnectButton } from "@tonconnect/ui-react";
 export const WinnerPage = () => {
   const { getBattle, getPlayer, getBattleIdCounter } = useGameContract();
   const [winnerAddress, setWinnerAddress] = useState<string>('');
@@ -48,60 +48,55 @@ export const WinnerPage = () => {
   loadWinnerInfo();
 
   return (
-    <div style={{ textAlign: 'center', padding: '2rem' }}>
-      <h1>🎉 战斗结束 🎉</h1>
+    <div className={styles.container}>
+      <div className={styles.buttonContainer}>
+        <TonConnectButton />
+
+      </div>
       {isLoading ? (
-        <WinnerCard>
+        <div className={styles.infoCard}>
+          <h1 style={{ textAlign: 'center' }}>🎉 战斗结束 🎉</h1>
           <p>加载中...</p>
-        </WinnerCard>
+        </div>
       ) : error ? (
-        <WinnerCard>
-          <p style={{ color: 'red' }}>{error}</p>
+        <div className={styles.infoCard}>
+          <h1 style={{ textAlign: 'center' }}>🎉 战斗结束 🎉</h1>
+          <p className={styles.error}>{error}</p>
           <button
             onClick={() => window.location.reload()}
-            style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+            className={styles.refreshButton}
           >
             重试
           </button>
-        </WinnerCard>
+        </div>
       ) : (
-        <WinnerCard>
-          <h2>胜利者: {winnerName}</h2>
-          <p>地址: {winnerAddress}</p>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <div className={styles.infoCard}>
+          <h1 style={{ textAlign: 'center', color: '#666' }}>🎉 战斗结束 🎉</h1>
+          <h2 style={{ textAlign: 'center' }}>胜利者: {winnerName}</h2>
+          <p style={{ textAlign: 'center' }}>地址: {winnerAddress}</p>
+          <p style={{ fontStyle: 'italic', color: '#666', margin: '1rem 0', textAlign: 'center', fontSize: '2.5rem' }}>
+            🎉 {winnerName} 展现了非凡的实力，成为了这场史诗级战斗的最终赢家！🎉
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '10rem' }}>
             <button
               onClick={() => {
                 setIsLoading(true);
                 setError(null);
                 loadWinnerInfo();
               }}
-              style={{ padding: '0.5rem 1rem' }}
+              className={styles.refreshButton}
             >
               刷新
             </button>
             <button
               onClick={() => navigate('/player-Info')}
-              style={{ padding: '0.5rem 1rem' }}
+              className={styles.refreshButton}
             >
               返回主页
             </button>
           </div>
-        </WinnerCard>
+        </div>
       )}
     </div>
   );
 };
-
-const WinnerCard = styled.div`
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 700px;
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;

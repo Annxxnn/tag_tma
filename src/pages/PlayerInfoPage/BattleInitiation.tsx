@@ -72,7 +72,7 @@ export const BattleInitiation = ({ styles }: { styles: any }) => {
             className={styles.battleButton}
             onClick={handleInitiateBattle}
             disabled={!opponentAddress}
-          >
+          ><span className={styles.icon}>🤖</span>
             开始战斗
           </button>
         )}
